@@ -37,7 +37,43 @@ The `jistProvider.setup` method takes a single argument.  The argument can be ei
 
 ```
 
-The configuration object is not processed until the models begin to be defined in the Angular run phase, so if you pass a function into `jistProvider.setup` instead of regular JavaScript object, you can take advantage of Angular services, such as `$http`.
+The configuration object is not processed until the models begin to be defined in the Angular run phase, so if you pass a function into `jistProvider.setup` instead of regular JavaScript object, you can take advantage of Angular services, such as `$http`.  Here's an example:
+
+```javascript
+angular.module('myApp', ['jist']).config(['jistProvider', function(jistProvider){
+ jistProvider.setup(['$http', function($http){
+  {
+   publish: true,
+   funcs: {
+    instance: {
+     put: function(){
+      if(!this.$key){
+       var that = this;
+       $http.post('/api/models/' + that.$model, JSON.stringify(that)).success(function(response){
+        that.$key = response.data.key;
+       });
+      }else{
+       $http.put('/api/models/' + that.$model + '/' + that.$key, JSON.stringify(that));
+      }
+     },
+     model: {
+      query: function(criteria){
+       var that = this;
+       return $http.get('/api/models/' + that.$name + '?criteria=' + criteria);
+      }
+     },
+     jist: {
+      clear: function(){
+       $http.delete('/api/models');
+      }
+     }
+    }
+   }
+  }
+ });
+});
+
+```
 
 ## Defining Models
 
