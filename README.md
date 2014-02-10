@@ -16,7 +16,26 @@ This module is used in three steps:
 During the Angular configuration phase, you can run the `jistProvider.setup` method to configure how jist interacts with your chosen storage medium.  During the Angular run phase, you can define application's models, further extending how each model interacts with the storage medium.  After your models are defined, you can inject them into your Angular controllers, services, etc., and use them however you want.
 
 ## Configuration
+The `jistProvider.setup` method takes a single argument.  The argument can be either a JavaScript object, a function that returns a JavaScript object, or an array of dependencies and a function returning a JavaScript object.  The JavaScript object can contain any of the following properties
 
+```javascript
+
+{
+ publish: true, // if true, model classes will be available through Angular as an injectable dependency
+ funcs: {
+  instance: {
+   // functions to be attached to instances of every model created via jist
+  },
+  model: {
+   // functions to be attached to the model class (static methods, so to speak)
+  },
+  jist: {
+   // functions to be attached to the jist object (global methods, for example, to clear the storage medium of all models
+  }
+ }
+}
+
+```
 
 ## Defining Models
 
