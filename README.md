@@ -30,7 +30,7 @@ The `jistProvider.setup` method takes a single argument.  The argument can be ei
    // functions to be attached to the model class (static methods, so to speak)
   },
   jist: {
-   // functions to be attached to the jist object (global methods, for example, to clear the storage medium of all models
+   // functions to be attached to the jist object (e.g. clear all models from storage medium)
   }
  }
 }
