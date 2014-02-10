@@ -21,18 +21,18 @@ The `jistProvider.setup` method takes a single argument.  The argument can be ei
 ```javascript
 
 {
- publish: true, // if true, model classes will be available through Angular as injectable dependencies
- funcs: {
-  instance: {
-   // functions to be attached to instances of every model created via jist
-  },
-  model: {
-   // functions to be attached to the model class (static methods, so to speak)
-  },
-  jist: {
-   // functions to be attached to the jist object (e.g. clear all models from storage medium)
+  publish: true, // if true, model classes will be available through Angular as injectable dependencies
+  funcs: {
+    instance: {
+      // functions to be attached to instances of every model created via jist
+    },
+    model: {
+      // functions to be attached to the model class (static methods, so to speak)
+    },
+    jist: {
+      // functions to be attached to the jist object (e.g. clear all models from storage medium)
+    }
   }
- }
 }
 
 ```
@@ -41,38 +41,36 @@ The configuration object is not processed until the models begin to be defined i
 
 ```javascript
 angular.module('myApp', ['jist']).config(['jistProvider', function(jistProvider){
- jistProvider.setup(['$http', function($http){
-  {
-   publish: true,
-   funcs: {
-    instance: {
-     put: function(){
-      if(!this.$key){
-       var that = this;
-       $http.post('/api/models/' + that.$model, JSON.stringify(that)).success(function(response){
-        that.$key = response.data.key;
-       });
-      }else{
-       $http.put('/api/models/' + that.$model + '/' + that.$key, JSON.stringify(that));
+  jistProvider.setup(['$http', function($http){
+    {
+      publish: true,
+      funcs: {
+        instance: {
+          put: function(){
+            var that = this;
+            if(!that.$key){
+              $http.post('/api/models/' + that.$model, JSON.stringify(that)).success(function(response){
+                that.$key = response.data.key;
+              });
+            }else{
+              $http.put('/api/models/' + that.$model + '/' + that.$key, JSON.stringify(that));
+            }
+          }
+        }
+        model: {
+          query: function(criteria){
+            return $http.get('/api/models/' + this.$name + '?criteria=' + criteria);
+          }
+        },
+        jist: {
+          clear: function(){
+            return $http.delete('/api/models');
+          }
+        }
       }
-     },
-     model: {
-      query: function(criteria){
-       var that = this;
-       return $http.get('/api/models/' + that.$name + '?criteria=' + criteria);
-      }
-     },
-     jist: {
-      clear: function(){
-       $http.delete('/api/models');
-      }
-     }
     }
-   }
-  }
- });
+  }]);
 });
-
 ```
 
 ## Defining Models
