@@ -1,4 +1,96 @@
-angular.module('jist.ext', []).provider('jist', function($provide){
+angular.module('jist.ext', [])
+.constant('jistLocalStorageConfig', function(){
+  var index = {
+    get: function(){
+      if(!localStorage.getItem('jistEntity_Index')){
+        localStorage.setItem('jistEntity_Index', JSON.stringify({}));
+      }
+      return JSON.parse(localStorage.getItem('jistEntity_Index'));
+    },
+    put: function(key){
+      var i = this.get();
+      i[key] = true;
+      localStorage.setItem('jistEntity_Index', JSON.stringify(i));
+    },
+    del: function(key){
+      var i = this.get();
+      delete i[key];
+      localStorage.setItem('jistEntity_Index', JSON.stringify(i));
+    },
+    clear: function(){
+      localStorage.setItem('jistEntity_Index', JSON.stringify({}));
+    }
+  }
+  function seg(){
+    return Math.floor((1 + Math.random()) * 0x10000).toString(16).substring(1);
+  }
+  function guid(){
+    return seg() + seg() + '-' + seg() + '-' + seg() + '-' + seg() + '-' + seg() + seg() + seg();
+  }
+  return {
+    publish: true,
+    funcs: {
+      instance: {
+        put: function(){
+          if(!this.$key){
+            this.$key = "jistEntity_" + guid();
+          }
+          localStorage.setItem(this.$key, JSON.stringify(this));
+          index.put(this.$key);
+          return this.$key;
+        },
+        del: function(){
+          index.del(this.$key);
+          if(this.$key){
+            localStorage.removeItem(this.$key);
+          }
+        },
+      },
+      model: {
+        query: function(compare){
+          var results = [];
+          var entityIndex = JSON.parse(localStorage['jistEntity_Index']);
+          var name = this.$name;
+          for(var key in entityIndex){
+            var obj = JSON.parse(localStorage.getItem(key));
+            this.$renew(obj);
+            if(!obj.$instanceOf(name)) continue;
+            if(compare == undefined || compare(obj)){
+              results.push(obj);
+            }
+          }
+          return results;
+        }
+      },
+      jist: {
+        clear: function(){
+          for(var key in index.get()){
+            localStorage.removeItem(key);
+          }
+          index.clear();
+        },
+        get: function($key){
+          return this.$renew( JSON.parse(localStorage.getItem($key)) );
+        },
+        query: function(name, compare){
+          var results = [];
+          var entityIndex = JSON.parse(localStorage['jistEntity_Index']);
+          for(var key in entityIndex){
+            var ancestry = entityIndex[key];
+            if(name == undefined || ancestry.indexOf('|' + name + '|') == -1)continue;
+            var obj = JSON.parse(localStorage.getItem(key));
+            obj = restore(obj, _defs[obj.$model]);
+            if(compare == undefined || compare(obj)){
+              results.push(obj);
+            }
+          }
+          return results;
+        }
+      }
+    }
+  } 
+})
+.provider('jist', function($provide){
   var _provide = $provide,
     _injector = null,
     _config = false,
