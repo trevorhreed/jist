@@ -91,14 +91,17 @@ angular.module('myapp').run(function(jist){
       }
     },
     Employee: {
-    
+      $extends: ['Person'],
+      salary: 0
     },
     Manager: {
-    
+      $extends: ['Employee'],
+      budget: 0
     }
   });
 });
 ```
 
+This code will define the `Person`, `Employee`, and `Manager` models with default values.  You may have noticed the `$extends` property on the `Employee` and `Manager` models; as you would expect this causes the `Employee` model to inherit all properties and methods from the `Person` model, while the `Manager` model inherits all properties methods from the `Employee` model (directly) *and* the `Person` model (indirectly).
 
 ## Using Models
