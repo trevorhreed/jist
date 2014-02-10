@@ -81,7 +81,7 @@ Serialization often presents a few challenges for models that have methods.  jis
 Once the configuration is written, the rest is cake.  Defining a model is as simple passing a dictionary of regular JavaScript objects to `jist.$define`:
 
 ```javascript
-angular.module('myapp').run(function(jist){
+angular.module('myapp').run(['jist', function(jist){
   jist.$define({
     Person: {
       name: '[DEFAULT NAME]',
@@ -99,11 +99,36 @@ angular.module('myapp').run(function(jist){
       budget: 0
     }
   });
-});
+}]);
 ```
 
 This code will define the `Person`, `Employee`, and `Manager` models with default values.  You may have noticed the `$extends` property on the `Employee` and `Manager` models; as you would expect this causes the `Employee` model to inherit all properties and methods from the `Person` model, while the `Manager` model inherits all properties methods from the `Employee` model (directly) *and* the `Person` model (indirectly). Also notice, that the `$extends` property can be an array of model names, or just a string containing a single model name.
 
 ## Using Models
+Using models is the easiest of all!  Simply inject the model name in your Angular controller or service and use it as a function to get a new instance of your model:
 
+```javascript
+angular.module('myapp').controller(['Manager', function(Manager){
 
+  $scope.bosses = Manager.query(); // this method is specified in the configuration (funcs.model.query)
+  $scope.newBoss = Manager();
+  /* Alternatively, you can specify the property values like so:
+  $scope.theBigBoss = Manager({
+    name: 'The Boss',
+    ssn: '123-45-6789',
+    salary: 80000,
+    budget: 10000
+  });
+  */
+  
+  $scope.onSaveNewBoss = function(){
+    // save the new boss
+    $scope.newBoss.put();
+    // push the new boss to our list of bosses
+    $scope.bosses.push($scope.newBoss);
+    // reset the form
+    $scope.newBoss = Manager();
+  };
+
+}]);
+```
