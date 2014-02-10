@@ -9,8 +9,11 @@ jist a a lightweight module for managing models in AngularJS.  It can be configu
 
 ## Overview
 
+
 ## Configuration
 
+
 ## Defining Models
+
 
 ## Using Models
