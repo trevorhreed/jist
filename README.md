@@ -73,7 +73,32 @@ angular.module('myApp', ['jist']).config(['jistProvider', function(jistProvider)
 });
 ```
 
+#### A few caveats
+
+Serialization often presents a few challenges for models that have methods.  jist provides a couple of convenience methods for restoring methods to a model after it has been deserialized.  You can call `$renew` or `$renew_multi` on either the jist object itself, or the model object (e.g. `MyModel.$renew(obj)`); in both cases, you pass in the deserialized object.  Since all instances of a jist model contain a $model property, the jist object always knows which methods to reattach.
+
 ## Defining Models
+Once the configuration is written, the rest is cake.  Defining a model is as simple passing a dictionary of regular JavaScript objects to `jist.$define`:
+
+```javascript
+angular.module('myapp').run(function(jist){
+  jist.$define({
+    Person: {
+      name: '[DEFAULT NAME]',
+      ssn: '333-22-4444',
+      sayMyName: function(){
+        console.log(this.name); // regular methods are ok too!
+      }
+    },
+    Employee: {
+    
+    },
+    Manager: {
+    
+    }
+  });
+});
+```
 
 
 ## Using Models
