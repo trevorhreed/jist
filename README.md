@@ -21,7 +21,7 @@ The `jistProvider.setup` method takes a single argument.  The argument can be ei
 ```javascript
 
 {
- publish: true, // if true, model classes will be available through Angular as an injectable dependency
+ publish: true, // if true, model classes will be available through Angular as injectable dependencies
  funcs: {
   instance: {
    // functions to be attached to instances of every model created via jist
