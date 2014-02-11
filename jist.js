@@ -1,4 +1,4 @@
-angular.module('jist.ext', [])
+angular.module('jistModels', [])
 .constant('jistLocalStorageConfig', function(){
   var index = {
     get: function(){
@@ -35,6 +35,7 @@ angular.module('jist.ext', [])
           if(!this.$key){
             this.$key = "jistEntity_" + guid();
           }
+          delete this['$$hashKey'];
           localStorage.setItem(this.$key, JSON.stringify(this));
           index.put(this.$key);
           return this.$key;
@@ -49,7 +50,7 @@ angular.module('jist.ext', [])
       model: {
         query: function(compare){
           var results = [];
-          var entityIndex = JSON.parse(localStorage['jistEntity_Index']);
+          var entityIndex = index.get();
           var name = this.$name;
           for(var key in entityIndex){
             var obj = JSON.parse(localStorage.getItem(key));
