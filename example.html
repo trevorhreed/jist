@@ -1,0 +1,59 @@
+<!doctype html>
+<html ng-app='app'>
+  <head>
+    <style>
+      .new{margin:3em 3em 1em;}
+      .list{margin:1em 4em 3em;}
+    </style>
+  </head>
+  <body ng-controller='con'>
+    <h1>Todo</h1>
+    <div class='new'>
+      <input type="text" ng-model="newItem.description" />
+      <input type="checkbox" ng-model="newItem.completed" />
+      <button ng-click="saveNewItem();">Add New Item</button>
+    </div>
+    <div class='list'>
+      <div class='list-item' ng-repeat="item in list">
+        <input type="checkbox" ng-model="item.completed" ng-change="onItemChange(item)" />
+        <input type='text' ng-model="item.description" ng-blur="onItemChange(item)" />
+        <button ng-click="onItemDelete(item)">Delete</button>
+      </div>
+    </div>
+    <script src='angular.min.js'></script>
+    <script src='jist.js'></script>
+    <script>
+      var app = angular.module('app', ['jistModels']);
+      app.config(function(jistProvider, jistLocalStorageConfig){
+        jistProvider.setup(jistLocalStorageConfig);
+      });
+      app.run(function(jist){
+        jist.$define({
+          ToDoItem: {
+            description: 'description',
+            completed: false
+          }
+        });
+      });
+      app.controller('con', function($scope, ToDoItem){
+        $scope.list = ToDoItem.query();
+        $scope.newItem = ToDoItem();
+        $scope.saveNewItem = function(){
+          $scope.newItem.put();
+          $scope.list.push($scope.newItem);
+          $scope.newItem = ToDoItem();
+        }
+        $scope.onItemChange = function(item){
+          item.put();
+        }
+        $scope.onItemDelete = function(item){
+          var i = $scope.list.indexOf(item);
+          if(i > -1){
+            $scope.list.splice(i, 1);
+          }
+          item.del();
+        }
+      });
+    </script>
+  </body>
+</html>
