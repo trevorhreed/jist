@@ -140,5 +140,5 @@ To use the built-in, HTML5 localStorage configuration, simply use the following 
 ```javascript
 angular.module('myapp').config(['jistProvider', 'jistLocalStorageConfig', function(jistProvider, jistLocalStorageConfig){
   jistProvider.setup(jistLocalStorageConfig);
-});
+}]);
 ```
